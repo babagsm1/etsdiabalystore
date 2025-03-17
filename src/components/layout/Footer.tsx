@@ -9,7 +9,7 @@ const Footer = () => {
     <footer className="w-full bg-secondary py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         <div className="space-y-4 animate-fade-in">
-          <h3 className="text-xl font-display font-medium">COMPUTER BUSINESS CENTER</h3>
+          <h3 className="text-xl font-display font-medium">Établissement DIABALY</h3>
           <p className="text-muted-foreground">
             Votre partenaire de confiance pour tous vos besoins en informatique et téléphonie.
           </p>
@@ -49,15 +49,15 @@ const Footer = () => {
           <div className="space-y-2">
             <div className="flex items-center space-x-3">
               <Phone size={16} className="text-primary" />
-              <a href="https://wa.me/22891254591" className="text-muted-foreground hover:text-primary transition-colors" target="_blank" rel="noopener noreferrer">+228 91254591 (WhatsApp)</a>
+              <a href="https://wa.me/22891306789" className="text-muted-foreground hover:text-primary transition-colors" target="_blank" rel="noopener noreferrer">+228 91306789 (WhatsApp)</a>
             </div>
             <div className="flex items-center space-x-3">
               <Phone size={16} className="text-primary" />
-              <a href="tel:+22899019805" className="text-muted-foreground hover:text-primary transition-colors">+228 99019805</a>
+              <a href="tel:+22891306789" className="text-muted-foreground hover:text-primary transition-colors">+228 91306789</a>
             </div>
             <div className="flex items-center space-x-3">
               <Mail size={16} className="text-primary" />
-              <a href="mailto:contact@computerbusiness.fr" className="text-muted-foreground hover:text-primary transition-colors">contact@computerbusiness.fr</a>
+              <a href="mailto:contact@etsdiabaly.com" className="text-muted-foreground hover:text-primary transition-colors">contact@etsdiabaly.com</a>
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@ const Footer = () => {
       
       <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-foreground/10">
         <p className="text-center text-sm text-muted-foreground">
-          &copy; {currentYear} COMPUTER BUSINESS CENTER. Tous droits réservés.
+          &copy; {currentYear} Établissement DIABALY. Tous droits réservés.
         </p>
       </div>
     </footer>

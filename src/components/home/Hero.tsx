@@ -37,8 +37,8 @@ const Hero = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight max-w-4xl mb-4"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/90">COMPUTER</span>{" "}
-          <span className="text-foreground">BUSINESS CENTER</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/90">Établissement</span>{" "}
+          <span className="text-foreground">DIABALY</span>
         </motion.h1>
         
         <motion.p

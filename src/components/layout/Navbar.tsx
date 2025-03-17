@@ -47,13 +47,13 @@ const Navbar = ({ cartItemCount = 0 }: { cartItemCount?: number }) => {
         <Link 
           to="/" 
           className="flex items-center space-x-2"
-          aria-label="COMPUTER BUSINESS CENTER - Retour à l'accueil"
+          aria-label="Établissement DIABALY - Retour à l'accueil"
         >
           <span className={cn(
             "font-display font-bold text-xl transition-colors",
             isScrolled ? "text-primary" : "text-primary"
           )}>
-            COMPUTER BUSINESS CENTER
+            Établissement DIABALY
           </span>
         </Link>
 

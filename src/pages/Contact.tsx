@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -25,38 +24,31 @@ const Contact = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Scroll to top when page loads
     window.scrollTo(0, 0);
   }, []);
 
-  // Recording timer effect
   useEffect(() => {
     if (isRecording) {
-      // Start timer
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime(prev => {
           const newTime = prev + 1;
-          // Update progress (max recording time of 60 seconds)
           setProgress(Math.min((newTime / 60) * 100, 100));
           return newTime;
         });
       }, 1000);
     } else {
-      // Clear timer
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
         recordingTimerRef.current = null;
       }
-      // Reset timer and progress when not recording
       if (!isRecording && recordingTime > 0) {
         setTimeout(() => {
           setRecordingTime(0);
           setProgress(0);
-        }, 1500); // Delay reset to allow animation to complete
+        }, 1500);
       }
     }
 
-    // Cleanup
     return () => {
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
@@ -73,7 +65,6 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validation
     if (!formData.name || !formData.email || !formData.message) {
       toast({
         title: "Formulaire incomplet",
@@ -84,7 +75,6 @@ const Contact = () => {
       return;
     }
 
-    // Simulate API call
     setTimeout(() => {
       toast({
         title: "Message envoyé !",
@@ -128,9 +118,7 @@ const Contact = () => {
           description: "Conversion de votre message vocal en texte.",
         });
         
-        // Simulate conversion (in a real app, you'd use a Speech-to-Text API)
         setTimeout(() => {
-          // Append simulated text to the current message
           setFormData(prev => ({
             ...prev,
             message: prev.message + (prev.message ? '\n' : '') + 
@@ -143,7 +131,6 @@ const Contact = () => {
           });
         }, 1500);
         
-        // Stop all audio tracks
         stream.getTracks().forEach(track => track.stop());
       });
       
@@ -184,8 +171,8 @@ const Contact = () => {
       icon: Phone,
       title: "Téléphone",
       details: [
-        { text: "+228 91254591", link: "https://wa.me/22891254591", type: "whatsapp" },
-        { text: "+228 99019805", link: "tel:+22899019805", type: "phone" }
+        { text: "+228 91306789", link: "https://wa.me/22891306789", type: "whatsapp" },
+        { text: "+228 91306789", link: "tel:+22891306789", type: "phone" }
       ],
       delay: 0
     },
@@ -193,8 +180,7 @@ const Contact = () => {
       icon: Mail,
       title: "Email",
       details: [
-        { text: "contact@computerbusiness.fr", link: "mailto:contact@computerbusiness.fr" },
-        { text: "support@computerbusiness.fr", link: "mailto:support@computerbusiness.fr" }
+        { text: "contact@etsdiabaly.com", link: "mailto:contact@etsdiabaly.com" }
       ],
       delay: 0.1
     },
@@ -210,8 +196,8 @@ const Contact = () => {
   ];
 
   const coordinates = {
-    lat: 6.180389,  // 6°10'49.4"N
-    lng: 1.195278   // 1°11'43.0"E
+    lat: 6.180389,
+    lng: 1.195278
   };
 
   const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.6212265593743!2d${coordinates.lng}!3d${coordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTAnNDkuNCJOIDHCsDExJzQzLjAiRQ!5e0!3m2!1sfr!2sus!4v1647395307985!5m2!1sfr!2sus`;
@@ -409,7 +395,6 @@ const Contact = () => {
           </div>
         </div>
         
-        {/* Full width map section */}
         <div className="mt-16">
           <div className="container mx-auto px-6">
             <h2 className="text-2xl md:text-3xl font-display font-bold mb-6 text-center">Notre Emplacement</h2>
@@ -426,7 +411,7 @@ const Contact = () => {
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
-                title="COMPUTER BUSINESS CENTER Location Map"
+                title="Établissement DIABALY Location Map"
               ></iframe>
             </motion.div>
           </div>
