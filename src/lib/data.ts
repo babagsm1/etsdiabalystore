@@ -1,5 +1,5 @@
 
-import { Product, CartItem, Testimonial, Order } from './types';
+import { Product, CartItem, Testimonial, Order, CustomerInfo } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 // Mock Data for Products
@@ -252,14 +252,18 @@ export const addTestimonial = (testimonial: Omit<Testimonial, 'id'>): Testimonia
 };
 
 // Order Functions
-export const createOrder = (order: Omit<Order, 'id' | 'date' | 'status'>): Order => {
+export const createOrder = (items: CartItem[], customerInfo: CustomerInfo): Order => {
   if (typeof window === 'undefined') throw new Error('Cannot create order on server');
   
+  const total = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  
   const newOrder: Order = {
-    ...order,
     id: uuidv4(),
+    items,
+    customerInfo,
     date: new Date().toISOString(),
-    status: 'pending'
+    status: 'pending',
+    total
   };
   
   const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
