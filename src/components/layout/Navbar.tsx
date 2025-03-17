@@ -26,6 +26,7 @@ const Navbar = ({ cartItemCount = 0 }: { cartItemCount?: number }) => {
   const navItems = [
     { name: 'Accueil', path: '/' },
     { name: 'Boutique', path: '/shop' },
+    { name: 'Qui sommes-nous', path: '/about-us' },
     { name: 'Contact', path: '/contact' },
   ];
 
