@@ -15,6 +15,7 @@ import AdminPasswordProtection from '@/components/admin/AdminPasswordProtection'
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [activeTab, setActiveTab] = useState('products');
 
   useEffect(() => {
     // Scroll to top when page loads
@@ -53,24 +54,41 @@ const Admin = () => {
 
           <ShopStats />
 
-          <Tabs defaultValue="products" className="space-y-6">
+          <Tabs 
+            defaultValue="products" 
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-6"
+          >
             <TabsList className="bg-white border shadow-sm rounded-lg p-1 h-auto flex flex-wrap md:flex-nowrap">
-              <TabsTrigger value="products" className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3">
+              <TabsTrigger 
+                value="products" 
+                className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3"
+              >
                 <Package className="mr-2 h-4 w-4" />
                 <span className="hidden md:inline">Produits</span>
                 <span className="md:hidden">Produits</span>
               </TabsTrigger>
-              <TabsTrigger value="orders" className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3">
+              <TabsTrigger 
+                value="orders" 
+                className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3"
+              >
                 <ShoppingBag className="mr-2 h-4 w-4" />
                 <span className="hidden md:inline">Commandes</span>
                 <span className="md:hidden">Cmd</span>
               </TabsTrigger>
-              <TabsTrigger value="testimonials" className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3">
+              <TabsTrigger 
+                value="testimonials" 
+                className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3"
+              >
                 <Users className="mr-2 h-4 w-4" />
                 <span className="hidden md:inline">Témoignages</span>
                 <span className="md:hidden">Avis</span>
               </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3">
+              <TabsTrigger 
+                value="settings" 
+                className="flex items-center data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-md py-2 px-3"
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 <span className="hidden md:inline">Paramètres</span>
                 <span className="md:hidden">Params</span>

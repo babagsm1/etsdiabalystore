@@ -1,4 +1,3 @@
-
 import { Product, CartItem, Testimonial, Order, CustomerInfo, ShopStats } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -174,6 +173,11 @@ const initializeLocalStorage = () => {
   // Initialize testimonials if not already in local storage
   if (!localStorage.getItem(TESTIMONIALS_STORAGE_KEY)) {
     localStorage.setItem(TESTIMONIALS_STORAGE_KEY, JSON.stringify(testimonialsData));
+  }
+  
+  // Ensure orders array exists
+  if (!localStorage.getItem(ORDERS_STORAGE_KEY)) {
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify([]));
   }
 };
 
@@ -374,27 +378,41 @@ export const createOrder = (items: CartItem[], customerInfo: CustomerInfo): Orde
   
   const newOrder: Order = {
     id: uuidv4(),
-    items,
+    items: JSON.parse(JSON.stringify(items)), // Créer une copie profonde pour éviter les problèmes de référence
     customerInfo,
     date: new Date().toISOString(),
     status: 'pending',
     total
   };
   
-  const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
-  const orders = savedOrders ? JSON.parse(savedOrders) : [];
+  console.log("Création d'une nouvelle commande:", newOrder);
   
-  const updatedOrders = [...orders, newOrder];
-  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
-  
-  return newOrder;
+  try {
+    const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
+    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+    
+    const updatedOrders = [...orders, newOrder];
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
+    
+    return newOrder;
+  } catch (error) {
+    console.error("Erreur lors de la création de la commande:", error);
+    throw new Error("Impossible de créer la commande");
+  }
 };
 
 export const getOrders = (): Order[] => {
   if (typeof window === 'undefined') return [];
   
-  const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
-  return savedOrders ? JSON.parse(savedOrders) : [];
+  try {
+    const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
+    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+    console.log("Commandes récupérées:", orders);
+    return orders;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des commandes:", error);
+    return [];
+  }
 };
 
 export const getPendingOrders = (): Order[] => {
@@ -405,19 +423,27 @@ export const getPendingOrders = (): Order[] => {
 export const updateOrderStatus = (orderId: string, status: Order['status']): void => {
   if (typeof window === 'undefined') return;
   
-  const orders = getOrders();
-  const orderIndex = orders.findIndex(order => order.id === orderId);
-  
-  if (orderIndex !== -1) {
-    orders[orderIndex].status = status;
-    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+  try {
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(order => order.id === orderId);
+    
+    if (orderIndex !== -1) {
+      orders[orderIndex].status = status;
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+      console.log(`Statut de la commande ${orderId} mis à jour:`, status);
+    } else {
+      console.error(`Commande non trouvée: ${orderId}`);
+    }
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du statut de la commande:", error);
+    throw new Error("Impossible de mettre à jour le statut de la commande");
   }
 };
 
 // Shop Statistics
 export const getShopStats = (): ShopStats => {
   return {
-    productCount: typeof window !== 'undefined' ? getTestimonials().length : testimonialsData.length,
+    productCount: typeof window !== 'undefined' ? getAllProducts().then(products => products.length) : 0,
     pendingOrdersCount: typeof window !== 'undefined' ? getPendingOrders().length : 0,
     testimonialCount: typeof window !== 'undefined' ? getTestimonials().filter(t => t.status === 'approved').length : testimonialsData.length,
     totalRevenue: typeof window !== 'undefined' ? 

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { getOrders, updateOrderStatus, createOrder } from '@/lib/data';
+import { getOrders, updateOrderStatus } from '@/lib/data';
 import { Order } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -39,13 +39,32 @@ const OrderManagement = () => {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadOrders();
   }, []);
 
   const loadOrders = () => {
-    setOrders(getOrders());
+    setLoading(true);
+    try {
+      // Récupérer les commandes et les trier par date (la plus récente en premier)
+      const allOrders = getOrders();
+      const sortedOrders = [...allOrders].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setOrders(sortedOrders);
+      console.log("Commandes chargées:", sortedOrders);
+    } catch (error) {
+      console.error("Erreur lors du chargement des commandes:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les commandes",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleStatusChange = (orderId: string, newStatus: Order['status']) => {
@@ -57,6 +76,7 @@ const OrderManagement = () => {
         description: `La commande #${orderId.substring(0, 8)} a été mise à jour avec succès.`,
       });
     } catch (error) {
+      console.error("Erreur lors de la mise à jour du statut:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la mise à jour du statut.",
@@ -182,7 +202,13 @@ const OrderManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.length === 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      Chargement des commandes...
+                    </TableCell>
+                  </TableRow>
+                ) : filteredOrders.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Aucune commande trouvée
