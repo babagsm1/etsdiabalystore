@@ -48,3 +48,25 @@ export interface ShopStats {
   testimonialCount: number;
   totalRevenue: number;
 }
+
+export interface ShopSettings {
+  general: {
+    shopName: string;
+    shopEmail: string;
+    shopPhone: string;
+    shopAddress: string;
+    enableFeaturedProducts: boolean;
+    enableTestimonials: boolean;
+  };
+  shipping: {
+    freeShippingThreshold: number;
+    deliveryFee: number;
+    estimatedDeliveryTime: string;
+  };
+  payment: {
+    acceptMobileMoney: boolean;
+    acceptCashOnDelivery: boolean;
+    acceptBankTransfer: boolean;
+    paymentInstructions: string;
+  };
+}

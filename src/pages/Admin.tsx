@@ -8,6 +8,8 @@ import { Package, ShoppingBag, Users, Settings } from 'lucide-react';
 import ShopStats from '@/components/admin/ShopStats';
 import ProductManagement from '@/components/admin/ProductManagement';
 import TestimonialManagement from '@/components/admin/TestimonialManagement';
+import OrderManagement from '@/components/admin/OrderManagement';
+import ShopSettings from '@/components/admin/ShopSettings';
 import { Link } from 'react-router-dom';
 
 const Admin = () => {
@@ -64,16 +66,7 @@ const Admin = () => {
             </TabsContent>
             
             <TabsContent value="orders">
-              <div className="p-4 bg-white rounded-lg border shadow-sm">
-                <h3 className="text-lg font-semibold mb-2">Gestion des commandes</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Consultez et gérez toutes les commandes des clients.
-                </p>
-                
-                <div className="text-center py-8 text-muted-foreground">
-                  Fonctionnalité en cours de développement... Les commandes sont gérées via l'onglet "Commandes"
-                </div>
-              </div>
+              <OrderManagement />
             </TabsContent>
             
             <TabsContent value="testimonials">
@@ -81,16 +74,7 @@ const Admin = () => {
             </TabsContent>
             
             <TabsContent value="settings">
-              <div className="p-4 bg-white rounded-lg border shadow-sm">
-                <h3 className="text-lg font-semibold mb-2">Paramètres de la boutique</h3>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Configurez les paramètres généraux de votre boutique en ligne.
-                </p>
-                
-                <div className="text-center py-8 text-muted-foreground">
-                  Fonctionnalité en cours de développement...
-                </div>
-              </div>
+              <ShopSettings />
             </TabsContent>
           </Tabs>
         </div>
