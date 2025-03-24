@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
@@ -73,8 +72,14 @@ export const Cart = () => {
     }
 
     try {
+      console.log("Tentative de création de commande avec les données:", {
+        cartItems,
+        customerInfo
+      });
+      
       // Create the order
       const newOrder = createOrder(cartItems, customerInfo);
+      console.log("Commande créée avec succès:", newOrder);
       
       toast({
         title: "Commande effectuée avec succès",
@@ -94,6 +99,7 @@ export const Cart = () => {
       
       setTimeout(() => navigate('/'), 2000);
     } catch (error) {
+      console.error("Erreur lors de la création de la commande:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la création de la commande.",
@@ -141,7 +147,7 @@ export const Cart = () => {
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-xl shadow-sm border border-border/40 overflow-hidden">
                   <div className="divide-y divide-border/60">
-                    <AnimatePresence mode="sync">
+                    <AnimatePresence>
                       {cartItems.map((item) => (
                         <motion.div 
                           key={item.product.id}

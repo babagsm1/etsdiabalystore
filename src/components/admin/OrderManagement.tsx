@@ -50,11 +50,13 @@ const OrderManagement = () => {
     try {
       // Récupérer les commandes et les trier par date (la plus récente en premier)
       const allOrders = getOrders();
+      console.log("Commandes brutes récupérées:", allOrders);
+      
       const sortedOrders = [...allOrders].sort((a, b) => 
         new Date(b.date).getTime() - new Date(a.date).getTime()
       );
       setOrders(sortedOrders);
-      console.log("Commandes chargées:", sortedOrders);
+      console.log("Commandes triées chargées:", sortedOrders);
     } catch (error) {
       console.error("Erreur lors du chargement des commandes:", error);
       toast({
@@ -223,7 +225,7 @@ const OrderManagement = () => {
                         <div className="text-xs text-muted-foreground">{order.customerInfo.email}</div>
                       </TableCell>
                       <TableCell>{formatDate(order.date)}</TableCell>
-                      <TableCell>{(order.total / 100).toLocaleString('fr-FR')} FCFA</TableCell>
+                      <TableCell>{order.total.toLocaleString()} FCFA</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getStatusIcon(order.status)}
@@ -307,9 +309,9 @@ const OrderManagement = () => {
                                                 <span>{item.product.name}</span>
                                               </div>
                                             </TableCell>
-                                            <TableCell>{(item.product.price / 100).toLocaleString('fr-FR')} FCFA</TableCell>
+                                            <TableCell>{item.product.price.toLocaleString()} FCFA</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>{((item.product.price * item.quantity) / 100).toLocaleString('fr-FR')} FCFA</TableCell>
+                                            <TableCell>{(item.product.price * item.quantity).toLocaleString()} FCFA</TableCell>
                                           </TableRow>
                                         ))}
                                       </TableBody>
@@ -321,7 +323,7 @@ const OrderManagement = () => {
                                   <div className="w-full max-w-xs space-y-2">
                                     <div className="flex justify-between text-sm">
                                       <span className="text-muted-foreground">Sous-total</span>
-                                      <span>{(order.total / 100).toLocaleString('fr-FR')} FCFA</span>
+                                      <span>{order.total.toLocaleString()} FCFA</span>
                                     </div>
                                     <div className="flex justify-between text-sm">
                                       <span className="text-muted-foreground">Livraison</span>
@@ -329,7 +331,7 @@ const OrderManagement = () => {
                                     </div>
                                     <div className="flex justify-between font-medium pt-2 border-t">
                                       <span>Total</span>
-                                      <span>{(order.total / 100).toLocaleString('fr-FR')} FCFA</span>
+                                      <span>{order.total.toLocaleString()} FCFA</span>
                                     </div>
                                   </div>
                                 </div>

@@ -1,3 +1,4 @@
+
 import { Product, CartItem, Testimonial, Order, CustomerInfo, ShopStats } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -374,6 +375,7 @@ export const updateTestimonialStatus = (id: string, status: 'approved' | 'reject
 export const createOrder = (items: CartItem[], customerInfo: CustomerInfo): Order => {
   if (typeof window === 'undefined') throw new Error('Cannot create order on server');
   
+  // Calculate total from the items directly
   const total = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   
   const newOrder: Order = {
@@ -388,11 +390,16 @@ export const createOrder = (items: CartItem[], customerInfo: CustomerInfo): Orde
   console.log("Création d'une nouvelle commande:", newOrder);
   
   try {
+    // Get existing orders
     const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
     const orders = savedOrders ? JSON.parse(savedOrders) : [];
     
+    // Add new order
     const updatedOrders = [...orders, newOrder];
+    
+    // Save to localStorage
     localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders));
+    console.log("Commandes après mise à jour:", updatedOrders);
     
     return newOrder;
   } catch (error) {
@@ -406,9 +413,14 @@ export const getOrders = (): Order[] => {
   
   try {
     const savedOrders = localStorage.getItem(ORDERS_STORAGE_KEY);
-    const orders = savedOrders ? JSON.parse(savedOrders) : [];
+    if (!savedOrders) {
+      console.log("Aucune commande trouvée, retour d'un tableau vide");
+      return [];
+    }
+    
+    const orders = JSON.parse(savedOrders);
     console.log("Commandes récupérées:", orders);
-    return orders;
+    return Array.isArray(orders) ? orders : [];
   } catch (error) {
     console.error("Erreur lors de la récupération des commandes:", error);
     return [];
