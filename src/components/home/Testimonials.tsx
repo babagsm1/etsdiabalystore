@@ -1,9 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowLeft, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { addTestimonial, getTestimonials } from '@/lib/data';
+import { addTestimonial, getApprovedTestimonials } from '@/lib/data';
 import { Testimonial } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -34,11 +34,16 @@ const TestimonialCard = ({ testimonial, className }: { testimonial: Testimonial;
 );
 
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>(getTestimonials());
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [formData, setFormData] = useState({ name: '', country: '', comment: '', rating: 5 });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Charger uniquement les témoignages approuvés pour l'affichage public
+    setTestimonials(getApprovedTestimonials());
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,18 +66,15 @@ const Testimonials = () => {
     }
     
     try {
-      // Add the new testimonial
-      const newTestimonial = addTestimonial(formData);
-      
-      // Update the state
-      setTestimonials(prev => [...prev, newTestimonial]);
+      // Add the new testimonial - it will be pending until approved
+      addTestimonial(formData);
       
       // Reset form
       setFormData({ name: '', country: '', comment: '', rating: 5 });
       
       toast({
         title: "Merci pour votre avis !",
-        description: "Votre commentaire a été ajouté avec succès.",
+        description: "Votre commentaire a été soumis et sera affiché après modération.",
       });
     } catch (error) {
       toast({
@@ -93,8 +95,13 @@ const Testimonials = () => {
     setCurrentIndex((currentIndex - 1 + testimonials.length) % testimonials.length);
   };
 
+  // S'assurer qu'il y a suffisamment de témoignages à afficher
+  if (testimonials.length === 0) {
+    return null;
+  }
+
   const displayedTestimonials = testimonials.slice(currentIndex, currentIndex + 3);
-  if (displayedTestimonials.length < 3) {
+  if (displayedTestimonials.length < 3 && testimonials.length >= 3) {
     displayedTestimonials.push(...testimonials.slice(0, 3 - displayedTestimonials.length));
   }
 
@@ -132,16 +139,18 @@ const Testimonials = () => {
 
           <div className="lg:hidden relative">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={testimonials[currentIndex].id}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.3 }}
-                className="mx-auto max-w-md"
-              >
-                <TestimonialCard testimonial={testimonials[currentIndex]} />
-              </motion.div>
+              {testimonials.length > 0 && (
+                <motion.div
+                  key={testimonials[currentIndex].id}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.3 }}
+                  className="mx-auto max-w-md"
+                >
+                  <TestimonialCard testimonial={testimonials[currentIndex]} />
+                </motion.div>
+              )}
             </AnimatePresence>
 
             <div className="flex justify-center mt-6 space-x-4">

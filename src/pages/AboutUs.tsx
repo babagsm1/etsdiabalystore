@@ -42,7 +42,7 @@ const AboutUs = () => {
               </div>
               <CardContent className="p-6">
                 <p className="text-foreground/80 leading-relaxed">
-                  Établissement DIABALY (anciennement COMPUTER BUSINESS CENTER) possède plus de 17 ans d'expertise dans le domaine de l'informatique et des nouvelles technologies. 
+                  Établissement DIABALY possède plus de 17 ans d'expertise dans le domaine de l'informatique et des nouvelles technologies. 
                   Notre parcours nous a façonné en tant que leader dans la fourniture de solutions informatiques innovantes et fiables.
                 </p>
                 <p className="mt-4 text-foreground/80 leading-relaxed">

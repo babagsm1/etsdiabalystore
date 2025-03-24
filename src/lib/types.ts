@@ -5,7 +5,7 @@ export interface Product {
   description: string;
   price: number;
   oldPrice?: number;
-  image: string;
+  images: string[];
   category: string;
   featured?: boolean;
   stock: number;
@@ -22,6 +22,8 @@ export interface Testimonial {
   country: string;
   comment: string;
   rating: number;
+  date?: string;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
 export interface CustomerInfo {
@@ -38,4 +40,11 @@ export interface Order {
   date: string;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   total: number;
+}
+
+export interface ShopStats {
+  productCount: number;
+  pendingOrdersCount: number;
+  testimonialCount: number;
+  totalRevenue: number;
 }
