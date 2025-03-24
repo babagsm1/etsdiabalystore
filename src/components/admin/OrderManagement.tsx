@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { getOrders, updateOrderStatus } from '@/lib/data';
+import { getOrders, updateOrderStatus, createOrder } from '@/lib/data';
 import { Order } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,8 @@ import {
   Check, 
   PackageX,
   AlertCircle,
-  Search
+  Search,
+  Eye
 } from 'lucide-react';
 import {
   Select,
@@ -23,11 +24,20 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,6 +112,10 @@ const OrderManagement = () => {
     } catch {
       return dateString;
     }
+  };
+
+  const viewOrderDetails = (order: Order) => {
+    setSelectedOrder(order);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -191,21 +205,128 @@ const OrderManagement = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Select
-                          value={order.status}
-                          onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}
-                        >
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Changer le statut" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">En attente</SelectItem>
-                            <SelectItem value="processing">En traitement</SelectItem>
-                            <SelectItem value="shipped">Expédié</SelectItem>
-                            <SelectItem value="delivered">Livré</SelectItem>
-                            <SelectItem value="cancelled">Annulé</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="flex items-center gap-2">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" size="sm" onClick={() => viewOrderDetails(order)}>
+                                <Eye className="h-4 w-4 mr-1" /> Voir
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                              <DialogHeader>
+                                <DialogTitle>Détails de la commande #{order.id.substring(0, 8)}</DialogTitle>
+                                <DialogDescription>
+                                  Commande passée le {formatDate(order.date)}
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="space-y-6 py-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div>
+                                    <h3 className="text-sm font-medium mb-2">Information Client</h3>
+                                    <div className="space-y-1 text-sm">
+                                      <p><span className="font-medium">Nom:</span> {order.customerInfo.name}</p>
+                                      <p><span className="font-medium">Email:</span> {order.customerInfo.email}</p>
+                                      <p><span className="font-medium">Téléphone:</span> {order.customerInfo.phone}</p>
+                                      <p><span className="font-medium">Adresse:</span> {order.customerInfo.address}</p>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h3 className="text-sm font-medium mb-2">Statut de la commande</h3>
+                                    <div className="flex items-center gap-2 mb-4">
+                                      {getStatusIcon(order.status)}
+                                      {getStatusBadge(order.status)}
+                                    </div>
+                                    <Select
+                                      value={order.status}
+                                      onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}
+                                    >
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Changer le statut" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="pending">En attente</SelectItem>
+                                        <SelectItem value="processing">En traitement</SelectItem>
+                                        <SelectItem value="shipped">Expédié</SelectItem>
+                                        <SelectItem value="delivered">Livré</SelectItem>
+                                        <SelectItem value="cancelled">Annulé</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <h3 className="text-sm font-medium mb-2">Articles commandés</h3>
+                                  <div className="border rounded-lg overflow-hidden">
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow>
+                                          <TableHead>Produit</TableHead>
+                                          <TableHead>Prix unitaire</TableHead>
+                                          <TableHead>Quantité</TableHead>
+                                          <TableHead>Total</TableHead>
+                                        </TableRow>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {order.items.map((item, index) => (
+                                          <TableRow key={index}>
+                                            <TableCell>
+                                              <div className="flex items-center gap-3">
+                                                <div className="h-10 w-10 rounded bg-gray-100 overflow-hidden">
+                                                  <img 
+                                                    src={item.product.images[0]} 
+                                                    alt={item.product.name}
+                                                    className="h-full w-full object-cover"
+                                                  />
+                                                </div>
+                                                <span>{item.product.name}</span>
+                                              </div>
+                                            </TableCell>
+                                            <TableCell>{(item.product.price / 100).toLocaleString('fr-FR')} FCFA</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>{((item.product.price * item.quantity) / 100).toLocaleString('fr-FR')} FCFA</TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex justify-end">
+                                  <div className="w-full max-w-xs space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                      <span className="text-muted-foreground">Sous-total</span>
+                                      <span>{(order.total / 100).toLocaleString('fr-FR')} FCFA</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                      <span className="text-muted-foreground">Livraison</span>
+                                      <span>Calculée à la livraison</span>
+                                    </div>
+                                    <div className="flex justify-between font-medium pt-2 border-t">
+                                      <span>Total</span>
+                                      <span>{(order.total / 100).toLocaleString('fr-FR')} FCFA</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          
+                          <Select
+                            value={order.status}
+                            onValueChange={(value) => handleStatusChange(order.id, value as Order['status'])}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Changer le statut" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">En attente</SelectItem>
+                              <SelectItem value="processing">En traitement</SelectItem>
+                              <SelectItem value="shipped">Expédié</SelectItem>
+                              <SelectItem value="delivered">Livré</SelectItem>
+                              <SelectItem value="cancelled">Annulé</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

@@ -1,17 +1,18 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { getCart, updateCartItemQuantity, removeFromCart, clearCart, getCartItemCount } from '@/lib/data';
-import { CartItem } from '@/lib/types';
+import { getCart, updateCartItemQuantity, removeFromCart, clearCart, getCartItemCount, createOrder } from '@/lib/data';
+import { CartItem, CustomerInfo } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 export const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [customerInfo, setCustomerInfo] = useState({
+  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     name: '',
     email: '',
     phone: '',
@@ -71,11 +72,15 @@ export const Cart = () => {
       return;
     }
 
-    setTimeout(() => {
+    try {
+      // Create the order
+      const newOrder = createOrder(cartItems, customerInfo);
+      
       toast({
         title: "Commande effectuée avec succès",
         description: "Nous vous contacterons prochainement pour finaliser votre commande."
       });
+      
       clearCart();
       setCartItems([]);
       setCustomerInfo({
@@ -88,7 +93,14 @@ export const Cart = () => {
       setShowForm(false);
       
       setTimeout(() => navigate('/'), 2000);
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la création de la commande.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+    }
   };
 
   const totalAmount = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);

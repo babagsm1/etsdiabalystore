@@ -1,12 +1,77 @@
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedButton } from '@/components/ui/AnimatedButton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import { addTestimonial } from '@/lib/data';
 
 const Hero = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [reviewData, setReviewData] = useState({
+    name: '',
+    country: '',
+    comment: '',
+    rating: 5,
+  });
+  const { toast } = useToast();
+  
+  const handleReviewChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setReviewData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+  
+  const handleRatingChange = (rating: number) => {
+    setReviewData(prev => ({
+      ...prev,
+      rating
+    }));
+  };
+  
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!reviewData.name || !reviewData.country || !reviewData.comment) {
+      toast({
+        title: "Champs incomplets",
+        description: "Veuillez remplir tous les champs du formulaire",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      addTestimonial(reviewData);
+      
+      toast({
+        title: "Témoignage envoyé",
+        description: "Merci pour votre avis ! Il sera visible après approbation par notre équipe."
+      });
+      
+      setReviewDialogOpen(false);
+      setReviewData({
+        name: '',
+        country: '',
+        comment: '',
+        rating: 5,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'envoi de votre témoignage.",
+        variant: "destructive"
+      });
+    }
+  };
   
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 pb-16">
@@ -54,7 +119,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-4 w-full justify-center"
+          className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-8"
         >
           <Link to="/shop">
             <AnimatedButton size="lg" className="group w-full sm:w-auto">
@@ -68,7 +133,94 @@ const Hero = () => {
             </AnimatedButton>
           </Link>
         </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <Button 
+            onClick={() => setReviewDialogOpen(true)}
+            variant="outline" 
+            className="flex items-center gap-2 bg-primary/5 hover:bg-primary/10 border-primary/10 text-primary hover:text-primary hover:scale-105 transition-transform"
+          >
+            <MessageSquare className="h-4 w-4" />
+            <span>Laisser un avis</span>
+          </Button>
+        </motion.div>
       </div>
+      
+      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Partagez votre expérience</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleReviewSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Votre nom</Label>
+              <Input
+                id="name"
+                name="name"
+                value={reviewData.name}
+                onChange={handleReviewChange}
+                placeholder="Entrez votre nom"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="country">Pays</Label>
+              <Input
+                id="country"
+                name="country"
+                value={reviewData.country}
+                onChange={handleReviewChange}
+                placeholder="Votre pays"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="rating">Note</Label>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => handleRatingChange(star)}
+                    className="p-1"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${
+                        star <= reviewData.rating 
+                          ? 'text-yellow-400 fill-yellow-400' 
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="comment">Votre avis</Label>
+              <textarea
+                id="comment"
+                name="comment"
+                value={reviewData.comment}
+                onChange={handleReviewChange}
+                placeholder="Partagez votre expérience avec nous..."
+                className="w-full h-24 px-3 py-2 text-base text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setReviewDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button type="submit">Envoyer</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
