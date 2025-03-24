@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X, ShoppingCart, ArrowLeft, Trash2 } from 'lucide-react';
@@ -25,7 +24,6 @@ export const Cart = () => {
 
   useEffect(() => {
     setCartItems(getCart());
-    // Scroll to top when page loads
     window.scrollTo(0, 0);
   }, []);
 
@@ -63,7 +61,6 @@ export const Cart = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validation
     if (!customerInfo.name || !customerInfo.email || !customerInfo.phone || !customerInfo.address) {
       toast({
         title: "Informations incomplètes",
@@ -74,7 +71,6 @@ export const Cart = () => {
       return;
     }
 
-    // Simulating API call
     setTimeout(() => {
       toast({
         title: "Commande effectuée avec succès",
@@ -91,7 +87,6 @@ export const Cart = () => {
       setIsSubmitting(false);
       setShowForm(false);
       
-      // Redirect to success page or home
       setTimeout(() => navigate('/'), 2000);
     }, 1500);
   };
@@ -144,7 +139,7 @@ export const Cart = () => {
                         >
                           <div className="aspect-square w-24 h-24 rounded-lg overflow-hidden bg-gray-100 shrink-0 mx-auto md:mx-0">
                             <img
-                              src={item.product.image}
+                              src={item.product.images[0]}
                               alt={item.product.name}
                               className="w-full h-full object-cover"
                             />

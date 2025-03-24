@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ProductCard } from '@/components/shop/ProductCard';
+import ProductCard from '@/components/shop/ProductCard';
 import { ArrowRight } from 'lucide-react';
 import { AnimatedButton } from '@/components/ui/AnimatedButton';
 import { getFeaturedProducts } from '@/lib/data';
