@@ -11,12 +11,23 @@ import TestimonialManagement from '@/components/admin/TestimonialManagement';
 import OrderManagement from '@/components/admin/OrderManagement';
 import ShopSettings from '@/components/admin/ShopSettings';
 import { Link } from 'react-router-dom';
+import AdminPasswordProtection from '@/components/admin/AdminPasswordProtection';
 
 const Admin = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   useEffect(() => {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
   }, []);
+
+  if (!isAuthenticated) {
+    return (
+      <AdminPasswordProtection 
+        onSuccess={() => setIsAuthenticated(true)} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
