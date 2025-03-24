@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShopStats as ShopStatsType } from '@/lib/types';
-import { getShopStats, getAllProducts, getPendingOrders, getApprovedTestimonials } from '@/lib/data';
+import { getShopStats, getAllProducts, getPendingOrders, getApprovedTestimonials, getOrders } from '@/lib/data';
 import { Package, ShoppingBag, Users, DollarSign } from 'lucide-react';
 
 const ShopStats = () => {
@@ -15,16 +15,26 @@ const ShopStats = () => {
 
   useEffect(() => {
     const loadStats = async () => {
-      const products = await getAllProducts();
-      const pendingOrders = getPendingOrders();
-      const testimonials = getApprovedTestimonials();
-      
-      setStats({
-        productCount: products.length,
-        pendingOrdersCount: pendingOrders.length,
-        testimonialCount: testimonials.length,
-        totalRevenue: getShopStats().totalRevenue
-      });
+      try {
+        // Load individual stats directly instead of using getShopStats
+        const products = await getAllProducts();
+        const pendingOrders = getPendingOrders();
+        const testimonials = getApprovedTestimonials();
+        const orders = getOrders();
+        
+        const totalRevenue = orders
+          .filter(order => order.status !== 'cancelled')
+          .reduce((sum, order) => sum + order.total, 0);
+        
+        setStats({
+          productCount: products.length,
+          pendingOrdersCount: pendingOrders.length,
+          testimonialCount: testimonials.length,
+          totalRevenue: totalRevenue
+        });
+      } catch (error) {
+        console.error("Error loading shop stats:", error);
+      }
     };
     
     loadStats();

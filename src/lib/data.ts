@@ -441,9 +441,16 @@ export const updateOrderStatus = (orderId: string, status: Order['status']): voi
 };
 
 // Shop Statistics
-export const getShopStats = (): ShopStats => {
+export const getShopStats = async (): Promise<ShopStats> => {
+  // Get product count asynchronously
+  let productCount = 0;
+  if (typeof window !== 'undefined') {
+    const products = await getAllProducts();
+    productCount = products.length;
+  }
+  
   return {
-    productCount: typeof window !== 'undefined' ? getAllProducts().then(products => products.length) : 0,
+    productCount: productCount,
     pendingOrdersCount: typeof window !== 'undefined' ? getPendingOrders().length : 0,
     testimonialCount: typeof window !== 'undefined' ? getTestimonials().filter(t => t.status === 'approved').length : testimonialsData.length,
     totalRevenue: typeof window !== 'undefined' ? 
