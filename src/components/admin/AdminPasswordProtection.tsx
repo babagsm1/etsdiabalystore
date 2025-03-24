@@ -16,6 +16,7 @@ const AdminPasswordProtection: React.FC<AdminPasswordProtectionProps> = ({ onSuc
     e.preventDefault();
     
     if (password === ADMIN_PASSWORD) {
+      toast.success('Connexion réussie');
       onSuccess();
     } else {
       toast.error('Mot de passe incorrect');
